@@ -1,12 +1,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from enum import Enum
+import threading
+
+class State_Player(Enum):
+    PLAY = True
+    PAUSE  = False
 
 class Ui_MainWindow(QMainWindow):
     
     def __init__(self):
         super(Ui_MainWindow, self).__init__()
         self.selected_file = None
-        self.play = False
+        self.play = State_Player.PAUSE
+        self.button_text = 'Play'
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -36,6 +43,8 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_play = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_play.setGeometry(QtCore.QRect(250, 330, 113, 32))
         self.pushButton_play.setObjectName("pushButton_play")
+        self.pushButton_play.setText(self.button_text)
+        self.pushButton_play.clicked.connect(lambda: self.change_state_player(self.play))
 
         self.pushButton_next = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_next.setGeometry(QtCore.QRect(460, 330, 113, 32))
@@ -105,13 +114,14 @@ class Ui_MainWindow(QMainWindow):
         self.menubar.addAction(self.menuPlay.menuAction())
 
         self.retranslateUi(MainWindow)
+        self.update_ui()
         
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
 
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MEDIA PLAYER"))
 
         self.label_title.setText(_translate("MainWindow", "Title"))
 
@@ -142,12 +152,15 @@ class Ui_MainWindow(QMainWindow):
         self.action_previous.setText(_translate("MainWindow", "Previous"))
         self.action_previous.setShortcut(_translate("MainWindow", "Alt+Left"))
 
+    def update_ui(self):
+        self.pushButton_play.setText(self.button_text)
+
     def open_file(self):
         
         file_extensions = ['mp3', 'wma', 'aac', 'flac', 'wav']
         current_file_extension = None
 
-        dialog_file = QFileDialog(self)
+        dialog_file = QFileDialog()
         dialog_file.setFileMode(QFileDialog.AnyFile)
         dialog_file.show()
 
@@ -158,7 +171,7 @@ class Ui_MainWindow(QMainWindow):
             else:
                 self.selected_file = None
                 self.selected_file = dialog_file.selectedFiles()
-            
+        
         current_file_extension = str(self.selected_file).replace("'", "").replace("]", "").replace("-", "").split(".")[-1]
         if not current_file_extension in file_extensions:
             self.selected_file = None
@@ -174,15 +187,31 @@ class Ui_MainWindow(QMainWindow):
             self.play = True
         
         self.play_sound()
+        thread_update_ui = threading.Thread(target=self.update_ui)
+        thread_update_ui.start()
 
     def play_sound(self):
         if self.play:
             # only for test use pygame. In future find or create own library for this
-            import pygame
-            pygame.init()
-            pygame.mixer.Sound(str(self.selected_file[0])).play()
+            # import pygame
+            # pygame.init()
+            # pygame.mixer.Sound(str(self.selected_file[0])).play()
+            pass
         else:
             pass
+
+    def change_state_player(self, current_state):
+        if current_state == State_Player.PLAY:
+            self.play = State_Player.PAUSE
+            self.button_text = 'Play'
+        elif current_state == State_Player.PAUSE:
+            self.play = State_Player.PLAY
+            self.button_text = 'Pause'
+        
+        thread_update_ui = threading.Thread(target=self.update_ui)
+        thread_update_ui.start()
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
