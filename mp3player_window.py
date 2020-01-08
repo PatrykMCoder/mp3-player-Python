@@ -1,6 +1,6 @@
+from PyMusic.play import Play
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from enum import Enum
 import threading
 
 
@@ -12,6 +12,7 @@ class Ui_MainWindow(QMainWindow):
         self.play = False
         self.button_text = 'Play'
         self.mixer = None
+        self.play_object = Play()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
