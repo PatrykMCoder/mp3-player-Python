@@ -11,6 +11,7 @@ class Ui_MainWindow(QMainWindow):
         self.selected_file = None
         self.play = False
         self.button_text = 'Play'
+        self.mixer = None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -189,21 +190,31 @@ class Ui_MainWindow(QMainWindow):
 
     def play_sound(self):
         if self.play:
-            # only for test use pygame. In future find or create own library for this
             import pygame
             pygame.init()
-            pygame.mixer.Sound(str(self.selected_file[0])).play()
-            pass
+            # only for test use pygame. In future find or create own library for this
+            self.mixer = pygame.mixer.Sound(str(self.selected_file[0]))
+            self.mixer.play()
+            self.button_text = "Pause"
         else:
-            pass
+               self.mixer.stop()
+        
+        thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
+        thread_update_ui.start()
 
-    def change_state_player(self, current_state):        
-        if current_state == True:
-            self.play = False
-            self.button_text = 'Play'
-        elif current_state == False:
-            self.play = True
-            self.button_text = 'Pause'
+
+    def change_state_player(self, current_state):   
+        if self.selected_file is not None:     
+            if current_state == True:
+                self.play = False
+                self.button_text = 'Play'
+            elif current_state == False:
+                self.play = True
+                self.button_text = 'Pause'
+        
+            self.play_sound()
+        else:
+            self.button_text = "Play"
         
         thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
         thread_update_ui.start()
