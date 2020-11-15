@@ -5,7 +5,7 @@ import threading
 
 
 class Ui_MainWindow(QMainWindow):
-    
+
     def __init__(self):
         super(Ui_MainWindow, self).__init__()
         self.selected_file = None
@@ -13,15 +13,16 @@ class Ui_MainWindow(QMainWindow):
         self.button_text = 'Play'
         self.mixer = None
 
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(660, 411)
+    def setup_ui(self, main_window):
+        main_window.setObjectName("MainWindow")
+        main_window.resize(660, 411)
+        main_window.setFixedSize(660, 411)
 
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.label_title = QtWidgets.QLabel(self.centralwidget)
+        self.central_widget = QtWidgets.QWidget(main_window)
+        self.central_widget.setObjectName("centralwidget")
+        self.label_title = QtWidgets.QLabel(self.central_widget)
         self.label_title.setGeometry(QtCore.QRect(130, 200, 371, 91))
-        
+
         font = QtGui.QFont()
         font.setPointSize(30)
         font.setBold(True)
@@ -34,109 +35,123 @@ class Ui_MainWindow(QMainWindow):
         self.label_title.setAlignment(QtCore.Qt.AlignCenter)
         self.label_title.setObjectName("label_title")
 
-        self.pushButton_previous = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_previous.setGeometry(QtCore.QRect(70, 330, 113, 32))
-        self.pushButton_previous.setObjectName("pushButton_previous")
+        self.push_button_previous = QtWidgets.QPushButton(self.central_widget)
+        self.push_button_previous.setGeometry(QtCore.QRect(70, 330, 113, 32))
+        self.push_button_previous.setObjectName("pushButton_previous")
 
-        self.pushButton_play = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_play.setGeometry(QtCore.QRect(250, 330, 113, 32))
-        self.pushButton_play.setObjectName("pushButton_play")
-        self.pushButton_play.setText(self.button_text)
-        self.pushButton_play.clicked.connect(lambda: self.change_state_player(self.play))
+        self.push_button_play = QtWidgets.QPushButton(self.central_widget)
+        self.push_button_play.setGeometry(QtCore.QRect(250, 330, 113, 32))
+        self.push_button_play.setObjectName("pushButton_play")
+        self.push_button_play.setText(self.button_text)
+        self.push_button_play.clicked.connect(lambda: self.change_state_player(self.play))
 
-        self.pushButton_next = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_next.setGeometry(QtCore.QRect(460, 330, 113, 32))
-        self.pushButton_next.setObjectName("pushButton_next")
+        self.push_button_next = QtWidgets.QPushButton(self.central_widget)
+        self.push_button_next.setGeometry(QtCore.QRect(460, 330, 113, 32))
+        self.push_button_next.setObjectName("pushButton_next")
 
-        self.progressBar_time = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar_time.setGeometry(QtCore.QRect(77, 290, 491, 23))
-        self.progressBar_time.setProperty("value", 24)
-        self.progressBar_time.setObjectName("progressBar_time")
+        self.progress_bar_time = QtWidgets.QProgressBar(self.central_widget)
+        self.progress_bar_time.setGeometry(QtCore.QRect(77, 290, 491, 23))
+        self.progress_bar_time.setProperty("value", 24)
+        self.progress_bar_time.setObjectName("progressBar_time")
 
-        self.label_current_time = QtWidgets.QLabel(self.centralwidget)
+        self.label_current_time = QtWidgets.QLabel(self.central_widget)
         self.label_current_time.setGeometry(QtCore.QRect(0, 290, 59, 16))
         self.label_current_time.setAlignment(QtCore.Qt.AlignCenter)
         self.label_current_time.setObjectName("label_current_time")
 
-        self.label_full_time = QtWidgets.QLabel(self.centralwidget)
+        self.label_full_time = QtWidgets.QLabel(self.central_widget)
         self.label_full_time.setGeometry(QtCore.QRect(590, 290, 59, 16))
         self.label_full_time.setAlignment(QtCore.Qt.AlignCenter)
         self.label_full_time.setObjectName("label_full_time")
 
-        self.label_album = QtWidgets.QLabel(self.centralwidget)
+        self.label_album = QtWidgets.QLabel(self.central_widget)
         self.label_album.setGeometry(QtCore.QRect(210, 40, 211, 121))
         self.label_album.setObjectName("label_album")
         self.label_album.setPixmap(QtGui.QPixmap('src/album_icon.png'))
         self.label_album.setScaledContents(True)
 
-        MainWindow.setCentralWidget(self.centralwidget)
+        main_window.setCentralWidget(self.central_widget)
 
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 660, 22))
-        self.menubar.setObjectName("menubar")
+        self.menu_bar = QtWidgets.QMenuBar(main_window)
+        self.menu_bar.setGeometry(QtCore.QRect(0, 0, 660, 22))
+        self.menu_bar.setObjectName("menubar")
 
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
-        self.menuPlay = QtWidgets.QMenu(self.menubar)
-        self.menuPlay.setObjectName("menuPlay")
+        self.menu_file = QtWidgets.QMenu(self.menu_bar)
+        self.menu_file.setObjectName("menuFile")
+        self.menu_play = QtWidgets.QMenu(self.menu_bar)
+        self.menu_play.setObjectName("menuPlay")
 
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
+        main_window.setMenuBar(self.menu_bar)
+        self.status_bar = QtWidgets.QStatusBar(main_window)
+        self.status_bar.setObjectName("statusbar")
 
-        MainWindow.setStatusBar(self.statusbar)
+        main_window.setStatusBar(self.status_bar)
 
-        self.action_open_file = QtWidgets.QAction(MainWindow)
+        self.action_open_file = QtWidgets.QAction(main_window)
         self.action_open_file.setObjectName("action_open_file")
         self.action_open_file.triggered.connect(self.open_file)
 
-        self.action_start = QtWidgets.QAction(MainWindow)
+        self.action_open_folder = QtWidgets.QAction(main_window)
+        self.action_open_folder.setObjectName("action_open_folder")
+        self.action_open_folder.triggered.connect(self.open_file)
+
+        self.action_start = QtWidgets.QAction(main_window)
         self.action_start.setObjectName("action_start")
 
-        self.action_stop = QtWidgets.QAction(MainWindow)
+        self.action_stop = QtWidgets.QAction(main_window)
         self.action_stop.setObjectName("action_stop")
 
-        self.action_next = QtWidgets.QAction(MainWindow)
+        self.action_next = QtWidgets.QAction(main_window)
         self.action_next.setObjectName("action_next")
 
-        self.action_previous = QtWidgets.QAction(MainWindow)
+        self.action_previous = QtWidgets.QAction(main_window)
         self.action_previous.setObjectName("action_previous")
 
-        self.menuFile.addAction(self.action_open_file)
-        self.menuPlay.addAction(self.action_start)
-        self.menuPlay.addAction(self.action_stop)
-        self.menuPlay.addAction(self.action_next)
-        self.menuPlay.addAction(self.action_previous)
+        self.action_shuffle = QtWidgets.QAction(main_window)
+        self.action_shuffle.setObjectName("action_shuffle_2")
 
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuPlay.menuAction())
+        self.action_repeat = QtWidgets.QAction(main_window)
+        self.action_repeat.setObjectName("action_repeat_2")
 
-        self.retranslateUi(MainWindow)
+        self.menu_file.addAction(self.action_open_file)
+        self.menu_file.addAction(self.action_open_folder)
+        self.menu_play.addAction(self.action_start)
+        self.menu_play.addAction(self.action_stop)
+        self.menu_play.addAction(self.action_next)
+        self.menu_play.addAction(self.action_previous)
+        self.menu_play.addAction(self.action_shuffle)
+        self.menu_play.addAction(self.action_repeat)
+        self.menu_bar.addAction(self.menu_file.menuAction())
+        self.menu_bar.addAction(self.menu_play.menuAction())
+
+        self.retranslate_ui(main_window)
         self.update_ui(self.button_text)
-        
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslateUi(self, MainWindow):
+        QtCore.QMetaObject.connectSlotsByName(main_window)
+
+    def retranslate_ui(self, main_window):
         _translate = QtCore.QCoreApplication.translate
 
-        MainWindow.setWindowTitle(_translate("MainWindow", "MEDIA PLAYER"))
+        main_window.setWindowTitle(_translate("MainWindow", "MEDIA PLAYER"))
 
         self.label_title.setText(_translate("MainWindow", "Title"))
 
-        self.pushButton_previous.setText(_translate("MainWindow", "Previous"))
-        self.pushButton_play.setText(_translate("MainWindow", "Play"))
-        self.pushButton_next.setText(_translate("MainWindow", "Next"))
+        self.push_button_previous.setText(_translate("MainWindow", "Previous"))
+        self.push_button_play.setText(_translate("MainWindow", "Play"))
+        self.push_button_next.setText(_translate("MainWindow", "Next"))
 
         self.label_current_time.setText(_translate("MainWindow", "0:20"))
 
         self.label_full_time.setText(_translate("MainWindow", "3:20"))
 
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menu_file.setTitle(_translate("MainWindow", "File"))
 
-        self.menuPlay.setTitle(_translate("MainWindow", "Play"))
+        self.menu_play.setTitle(_translate("MainWindow", "Play"))
 
         self.action_open_file.setText(_translate("MainWindow", "Open file"))
         self.action_open_file.setShortcut(_translate("MainWindow", "Meta+O"))
+
+        self.action_open_folder.setText(_translate("MainWindow", "Open folder"))
 
         self.action_start.setText(_translate("MainWindow", "Start"))
         self.action_start.setShortcut(_translate("MainWindow", "Meta+S"))
@@ -150,42 +165,43 @@ class Ui_MainWindow(QMainWindow):
         self.action_previous.setText(_translate("MainWindow", "Previous"))
         self.action_previous.setShortcut(_translate("MainWindow", "Alt+Left"))
 
-    def update_ui(self, text):
-        self.pushButton_play.setText(text)
+        self.action_repeat.setText(_translate("MainWindow", "Repeat"))
+        self.action_shuffle.setText(_translate("MainWindow", "Shuffle"))
 
+        self.action_open_folder.setText(_translate("MainWindow", "Open folder"))
+
+    def update_ui(self, text):
+        self.push_button_play.setText(text)
 
     def open_file(self):
-        
-        file_extensions = ['mp3', 'wma', 'aac', 'flac', 'wav']
-        current_file_extension = None
+        file_extensions = ['wma', 'aac', 'flac', 'wav']
 
         dialog_file = QFileDialog()
         dialog_file.setFileMode(QFileDialog.AnyFile)
         dialog_file.show()
 
-
         if dialog_file.exec_():
-            if self.selected_file == None:
+            if self.selected_file is None:
                 self.selected_file = dialog_file.selectedFiles()
             else:
                 self.selected_file = None
                 self.selected_file = dialog_file.selectedFiles()
-        
-        current_file_extension = str(self.selected_file).replace("'", "").replace("]", "").replace("-", "").split(".")[-1]
-        if not current_file_extension in file_extensions:
+
+        current_file_extension = str(self.selected_file).replace("'", "").replace("]", "").replace("-", "").split(".")[
+            -1]
+        if current_file_extension not in file_extensions:
             self.selected_file = None
             self.play = False
 
             error_dialog = QMessageBox()
-            error_dialog.setText('You do not selected music file')
+            error_dialog.setText('You selected not supported')
             error_dialog.setWindowTitle('Warring!')
             error_dialog.setInformativeText('You should select file type: .mp3, .wma, .acc, .flac')
             error_dialog.setIcon(QMessageBox.Warning)
-            error_dialog.exec_()
-
+            error_dialog.show()
         else:
             self.play = True
-        
+
         self.play_sound()
 
     def play_sound(self):
@@ -197,34 +213,34 @@ class Ui_MainWindow(QMainWindow):
             self.mixer.play()
             self.button_text = "Pause"
         else:
-               self.mixer.stop()
-        
+            self.mixer.stop()
+
         thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
         thread_update_ui.start()
 
-
-    def change_state_player(self, current_state):   
-        if self.selected_file is not None:     
-            if current_state == True:
+    def change_state_player(self, current_state):
+        if self.selected_file is not None:
+            if current_state is True:
                 self.play = False
                 self.button_text = 'Play'
-            elif current_state == False:
+            elif current_state is False:
                 self.play = True
                 self.button_text = 'Pause'
-        
+
             self.play_sound()
         else:
             self.button_text = "Play"
-        
+
         thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
         thread_update_ui.start()
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    main_window = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    ui.setup_ui(main_window)
+    main_window.show()
     sys.exit(app.exec_())
