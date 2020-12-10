@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from enum import Enum
 import threading
-
+from os import walk
+import time
 
 class Ui_MainWindow(QMainWindow):
 
@@ -11,7 +11,10 @@ class Ui_MainWindow(QMainWindow):
         self.selected_file = None
         self.play = False
         self.button_text = 'Play'
+        self.title = 'Title'
         self.mixer = None
+        self.path_to_folder = None
+        self.from_folder = None
 
     def setup_ui(self, main_window):
         main_window.setObjectName("MainWindow")
@@ -93,7 +96,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.action_open_folder = QtWidgets.QAction(main_window)
         self.action_open_folder.setObjectName("action_open_folder")
-        self.action_open_folder.triggered.connect(self.open_file)
+        self.action_open_folder.triggered.connect(self.open_folder)
 
         self.action_start = QtWidgets.QAction(main_window)
         self.action_start.setObjectName("action_start")
@@ -125,7 +128,7 @@ class Ui_MainWindow(QMainWindow):
         self.menu_bar.addAction(self.menu_play.menuAction())
 
         self.retranslate_ui(main_window)
-        self.update_ui(self.button_text)
+        self.update_ui(self.button_text, self.title)
 
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
@@ -170,8 +173,9 @@ class Ui_MainWindow(QMainWindow):
 
         self.action_open_folder.setText(_translate("MainWindow", "Open folder"))
 
-    def update_ui(self, text):
+    def update_ui(self, text, title):
         self.push_button_play.setText(text)
+        self.label_title.setText(title)
 
     def open_file(self):
         file_extensions = ['wma', 'aac', 'flac', 'wav']
@@ -198,27 +202,55 @@ class Ui_MainWindow(QMainWindow):
             error_dialog.setWindowTitle('Warring!')
             error_dialog.setInformativeText('You should select file type: .mp3, .wma, .acc, .flac')
             error_dialog.setIcon(QMessageBox.Warning)
-            error_dialog.show()
+            error_dialog.exec_()
         else:
             self.play = True
 
+        self.from_folder = False
         self.play_sound()
 
+    def open_folder(self):
+        file_extensions = ['wma', 'aac', 'flac', 'wav']
+        dialog_folder = QFileDialog().getExistingDirectory(self, 'Select folder')
+        files = []
+        for (dirpath, dirnames, filenames) in walk(dialog_folder):
+            self.path_to_folder = dirpath
+            files.extend(filenames)
+
+        for f in files:
+            file_extension = str(f).replace("'", "").replace("]", "").replace("-", "").split(".")[-1]
+            if file_extension not in file_extensions:
+                files.remove(f)
+        self.selected_file = files
+        self.play = True
+        self.from_folder = True
+        self.play_sound()
+
+    # HERE IS UI FREEZE WHILE IS PLAYING MUSIC. MAKE IT BETTER
     def play_sound(self):
         if self.play:
             import pygame
             pygame.init()
             # only for test use pygame. In future find or create own library for this
-            self.mixer = pygame.mixer.Sound(str(self.selected_file[0]))
-            self.mixer.play()
-            self.button_text = "Pause"
+            for f in self.selected_file:
+                if self.from_folder:
+                    self.mixer = pygame.mixer.Sound(str(self.path_to_folder + "/" + f))
+                else:
+                    self.mixer = pygame.mixer.Sound(str(f))
+                # self.title = f
+                # self.button_text = "Pause"
+                channel = self.mixer.play()
+                # while channel.get_busy():
+                #     pygame.time.wait(int(self.mixer.get_length()))
         else:
-            self.mixer.stop()
+            if self.mixer is not None:
+                self.mixer.stop()
 
-        thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
-        thread_update_ui.start()
+        # thread_update_ui = threading.Thread(target=self.update_ui(self.button_text, self.title))
+        # thread_update_ui.start()
 
     def change_state_player(self, current_state):
+        if self.selected_file is not None:
         if self.selected_file is not None:
             if current_state is True:
                 self.play = False
@@ -231,7 +263,7 @@ class Ui_MainWindow(QMainWindow):
         else:
             self.button_text = "Play"
 
-        thread_update_ui = threading.Thread(target=self.update_ui(self.button_text))
+        thread_update_ui = threading.Thread(target=self.update_ui(self.button_text, self.title))
         thread_update_ui.start()
 
 
