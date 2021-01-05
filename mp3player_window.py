@@ -251,7 +251,6 @@ class Ui_MainWindow(QMainWindow):
 
     def change_state_player(self, current_state):
         if self.selected_file is not None:
-        if self.selected_file is not None:
             if current_state is True:
                 self.play = False
                 self.button_text = 'Play'
